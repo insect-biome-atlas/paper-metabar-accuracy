@@ -1,0 +1,695 @@
+There are 21770 clusters detected in lysates
+There are 20603 clusters detected in homogenates
+Of these clusters, 19301 clusters are shared
+There are 1302 homogenate clusters missed in lysates
+There are 2469 lysate clusters missed in homogenates
+There are 21937 cluster occurrences detected in homogenates but not lysates
+This represents 8.81 % of all cluster occurrences
+There are 45872 cluster occurrences detected in lysates but not homogenates
+This represents 18.42 % of all cluster occurrences
+
+Order stats for clusters found only in lysates 
+Hymenoptera -- 1063 
+Diptera -- 635 
+Trombidiformes -- 162 
+Hemiptera -- 90 
+Coleoptera -- 69 
+Sarcoptiformes -- 67 
+Peronosporales -- 52 
+Mesostigmata -- 45 
+Lepidoptera -- 39 
+Trichoptera -- 30 
+Thysanoptera -- 27 
+Rhabditida -- 19 
+Araneae -- 18 
+Entomobryomorpha -- 17 
+Symphypleona -- 17 
+Enchytraeida -- 16 
+Passeriformes -- 12 
+Poduromorpha -- 12 
+Parachela -- 6 
+Psocodea -- 6 
+
+Family stats for clusters found only in lysates 
+unclassified.Hymenoptera -- 376 
+Cecidomyiidae -- 322 
+unclassified.Diptera -- 150 
+Platygastridae -- 116 
+Eulophidae -- 104 
+Braconidae -- 90 
+Ceraphronidae -- 66 
+Diapriidae -- 59 
+Figitidae -- 58 
+Ichneumonidae -- 43 
+Peronosporaceae -- 41 
+Chironomidae -- 38 
+unclassified.Hemiptera -- 38 
+Sciaridae -- 35 
+Aphididae -- 34 
+Tydeidae -- 27 
+unclassified.Trichoptera -- 27 
+Pteromalidae -- 26 
+Mymaridae -- 25 
+Eupodidae -- 24 
+
+Genus stats for clusters found only in lysates 
+unclassified.Hymenoptera -- 376 
+Cecidomyiidae_X -- 271 
+unclassified.Diptera -- 150 
+Platygastridae_X -- 98 
+Ceraphronidae_X -- 63 
+unclassified.Eulophidae -- 57 
+unclassified.Hemiptera -- 38 
+Diapriidae_X -- 35 
+unclassified.Braconidae -- 30 
+unclassified.Cecidomyiidae -- 30 
+Tydeidae_X -- 27 
+unclassified.Trichoptera -- 27 
+Eupodidae_X -- 24 
+unclassified.Thysanoptera -- 20 
+Braconidae_X -- 19 
+Figitidae_X -- 19 
+unclassified.Figitidae -- 19 
+Eulophidae_X -- 16 
+Hymenoptera_XX -- 16 
+Peronospora -- 16 
+
+Order stats for clusters found only in homogenates 
+Hymenoptera -- 600 
+Coleoptera -- 226 
+Diptera -- 202 
+Rhabditida -- 74 
+Hemiptera -- 36 
+Lepidoptera -- 29 
+Sarcoptiformes -- 25 
+Trombidiformes -- 24 
+Araneae -- 13 
+Poduromorpha -- 9 
+Trichoptera -- 8 
+Orthoptera -- 6 
+Passeriformes -- 5 
+Peronosporales -- 4 
+Psocodea -- 4 
+Enchytraeida -- 3 
+Entomobryomorpha -- 3 
+Isopoda -- 3 
+Artiodactyla -- 2 
+Lagomorpha -- 2 
+
+Family stats for clusters found only in homogenates 
+unclassified.Hymenoptera -- 214 
+Ichneumonidae -- 84 
+unclassified.Rhabditida -- 71 
+unclassified.Diptera -- 69 
+Braconidae -- 47 
+Curculionidae -- 44 
+Staphylinidae -- 44 
+Cecidomyiidae -- 42 
+Platygastridae -- 30 
+Crabronidae -- 29 
+Eulophidae -- 25 
+Diapriidae -- 23 
+unclassified.Coleoptera -- 19 
+Pteromalidae -- 18 
+Hymenoptera_X -- 17 
+Figitidae -- 16 
+Sciaridae -- 16 
+Elateridae -- 15 
+Carabidae -- 14 
+Mycetophilidae -- 13 
+
+Genus stats for clusters found only in homogenates 
+unclassified.Hymenoptera -- 214 
+unclassified.Rhabditida -- 71 
+unclassified.Diptera -- 69 
+Cecidomyiidae_X -- 37 
+Platygastridae_X -- 24 
+unclassified.Ichneumonidae -- 23 
+unclassified.Coleoptera -- 19 
+Hymenoptera_XX -- 17 
+unclassified.Braconidae -- 16 
+Diapriidae_X -- 14 
+Ichneumonidae_X -- 12 
+unclassified.Eulophidae -- 12 
+unclassified.Hemiptera -- 10 
+Crossocerus -- 8 
+unclassified.Figitidae -- 8 
+Braconidae_X -- 7 
+Ceraphronidae_X -- 7 
+Diptera_XX -- 7 
+Lasioglossum -- 7 
+unclassified.Diapriidae -- 7 
+
+Order stats for cluster occurrences missed in lysates 
+Hymenoptera -- 3364 
+Diptera -- 2630 
+Coleoptera -- 755 
+Hemiptera -- 359 
+Lepidoptera -- 279 
+Araneae -- 100 
+Rhabditida -- 96 
+Trombidiformes -- 92 
+Sarcoptiformes -- 91 
+Orthoptera -- 73 
+Entomobryomorpha -- 43 
+Thysanoptera -- 41 
+Mesostigmata -- 35 
+Psocodea -- 32 
+Trichoptera -- 29 
+Neuroptera -- 27 
+Symphypleona -- 27 
+Peronosporales -- 18 
+Crassiclitellata -- 15 
+Isopoda -- 11 
+
+Family stats for cluster occurrences missed in lysates 
+Ichneumonidae -- 778 
+Cecidomyiidae -- 671 
+unclassified.Hymenoptera -- 666 
+Braconidae -- 402 
+Diapriidae -- 257 
+Sciaridae -- 248 
+unclassified.Diptera -- 233 
+Phoridae -- 227 
+Platygastridae -- 192 
+Mycetophilidae -- 176 
+Eulophidae -- 159 
+Staphylinidae -- 154 
+Chironomidae -- 140 
+Pteromalidae -- 138 
+Cicadellidae -- 121 
+Curculionidae -- 107 
+unclassified.Rhabditida -- 92 
+Figitidae -- 90 
+Crabronidae -- 72 
+Hybotidae -- 71 
+
+Genus stats for cluster occurrences missed in lysates 
+unclassified.Hymenoptera -- 666 
+Cecidomyiidae_X -- 554 
+unclassified.Diptera -- 233 
+Platygastridae_X -- 154 
+Diapriidae_X -- 135 
+Megaselia -- 133 
+unclassified.Ichneumonidae -- 105 
+Ichneumonidae_X -- 98 
+unclassified.Rhabditida -- 92 
+Braconidae_X -- 62 
+Ceraphronidae_X -- 60 
+unclassified.Braconidae -- 59 
+unclassified.Diapriidae -- 53 
+Corynoptera -- 51 
+Hymenoptera_XX -- 51 
+unclassified.Eulophidae -- 47 
+Bradysia -- 46 
+Phoridae_X -- 46 
+unclassified.Acrididae -- 44 
+Diptera_XX -- 40 
+
+Order stats for cluster occurrences missed in homogenates 
+Diptera -- 4682 
+Hymenoptera -- 4041 
+Hemiptera -- 515 
+Lepidoptera -- 362 
+Coleoptera -- 353 
+Trombidiformes -- 278 
+Araneae -- 154 
+Sarcoptiformes -- 144 
+Mesostigmata -- 114 
+Entomobryomorpha -- 83 
+Thysanoptera -- 76 
+Peronosporales -- 73 
+Symphypleona -- 61 
+Psocodea -- 60 
+Trichoptera -- 57 
+Orthoptera -- 53 
+Neuroptera -- 37 
+Rhabditida -- 36 
+Poduromorpha -- 21 
+Crassiclitellata -- 19 
+
+Family stats for cluster occurrences missed in homogenates 
+Cecidomyiidae -- 1700 
+unclassified.Hymenoptera -- 913 
+Braconidae -- 564 
+Ichneumonidae -- 540 
+Chironomidae -- 527 
+unclassified.Diptera -- 481 
+Sciaridae -- 366 
+Diapriidae -- 351 
+Platygastridae -- 315 
+Eulophidae -- 295 
+Phoridae -- 265 
+Aphididae -- 171 
+Mycetophilidae -- 166 
+Pteromalidae -- 165 
+Figitidae -- 154 
+Ceraphronidae -- 140 
+Agromyzidae -- 127 
+Cicadellidae -- 100 
+Ceratopogonidae -- 94 
+Muscidae -- 83 
+
+Genus stats for cluster occurrences missed in homogenates 
+Cecidomyiidae_X -- 1441 
+unclassified.Hymenoptera -- 913 
+unclassified.Diptera -- 481 
+Platygastridae_X -- 256 
+Diapriidae_X -- 204 
+Megaselia -- 156 
+Ceraphronidae_X -- 132 
+Braconidae_X -- 98 
+unclassified.Eulophidae -- 97 
+unclassified.Braconidae -- 86 
+unclassified.Cecidomyiidae -- 84 
+Ichneumonidae_X -- 79 
+Corynoptera -- 74 
+unclassified.Hemiptera -- 69 
+unclassified.Diapriidae -- 64 
+unclassified.Ichneumonidae -- 63 
+Hymenoptera_XX -- 62 
+Phoridae_X -- 56 
+Bradysia -- 52 
+Eulophidae_X -- 51 
+
+The 50 clusters with the largest mean reads (lysates + homogenates)
+unclassified.Diptera_cluster1
+Polleniidae_cluster1
+Acrididae_cluster2
+Muscidae_cluster4
+Sarcophagidae_cluster1
+Nemouridae_cluster1
+Muscidae_cluster3
+Chironomidae_cluster12
+Syrphidae_cluster4
+Entomobryidae_cluster1
+Tabanidae_cluster1
+Orchesellidae_cluster1
+Acrididae_cluster1
+Anthomyiidae_cluster3
+Muscidae_cluster5
+Vespidae_cluster2
+Muscidae_cluster2
+Polleniidae_cluster4
+Anthomyiidae_cluster4
+Ectobiidae_cluster1
+Entomobryidae_cluster3
+Muscidae_cluster10
+Dolichopodidae_cluster4
+Apidae_cluster1
+Muscidae_cluster20
+Anthomyiidae_cluster2
+Syrphidae_cluster1
+Simuliidae_cluster1
+Polleniidae_cluster2
+Muscidae_cluster1
+Syrphidae_cluster8
+Polleniidae_cluster3
+Anthomyiidae_cluster1
+Entomobryidae_cluster5
+Chironomidae_cluster8
+Anthomyiidae_cluster6
+Muscidae_cluster9
+Anthomyiidae_cluster5
+Syrphidae_cluster2
+Dolichopodidae_cluster1
+Orchesellidae_cluster2
+Forficulidae_cluster2
+Entomobryidae_cluster4
+Peripsocidae_cluster1
+Acanthosomatidae_cluster1
+Sminthuridae_cluster1
+Heleomyzidae_cluster1
+Scathophagidae_cluster1
+Formicidae_cluster2
+Coccinellidae_cluster1
+
+Order stats for clusters with the largest mean reads 
+Diptera -- 32 
+Entomobryomorpha -- 6 
+Hymenoptera -- 3 
+Orthoptera -- 2 
+Blattodea -- 1 
+Coleoptera -- 1 
+Dermaptera -- 1 
+Hemiptera -- 1 
+Plecoptera -- 1 
+Psocodea -- 1 
+Symphypleona -- 1 
+
+Family stats for clusters with the largest mean reads 
+Muscidae -- 8 
+Anthomyiidae -- 6 
+Entomobryidae -- 4 
+Polleniidae -- 4 
+Syrphidae -- 4 
+Acrididae -- 2 
+Chironomidae -- 2 
+Dolichopodidae -- 2 
+Orchesellidae -- 2 
+Acanthosomatidae -- 1 
+Apidae -- 1 
+Coccinellidae -- 1 
+Ectobiidae -- 1 
+Forficulidae -- 1 
+Formicidae -- 1 
+Heleomyzidae -- 1 
+Nemouridae -- 1 
+Peripsocidae -- 1 
+Sarcophagidae -- 1 
+Scathophagidae -- 1 
+
+Genus stats for clusters with the largest mean reads 
+Pollenia -- 4 
+Muscidae_Helina -- 3 
+Chorthippus -- 2 
+Entomobrya -- 2 
+Lepidocyrtus -- 2 
+Orchesella -- 2 
+Phaonia -- 2 
+Allacma -- 1 
+Anthomyia -- 1 
+Bombus -- 1 
+Bryophaenocladius -- 1 
+Chrysotoxum -- 1 
+Coccinella -- 1 
+Delia -- 1 
+Dolichopus -- 1 
+Ectobius -- 1 
+Elasmostethus -- 1 
+Episyrphus -- 1 
+Eupeodes -- 1 
+Forficula -- 1 
+
+The 50 clusters with the largest surplus of lysate reads (difference in mean reads)
+Bdellidae_cluster1
+Ceratopogonidae_cluster4
+Chironomidae_cluster22
+Platygastridae_cluster2
+Peripsocidae_cluster1
+Entomobryidae_cluster7
+Entomobryidae_cluster6
+Chironomidae_cluster16
+Entomobryidae_cluster12
+Chironomidae_cluster2
+Entomobryidae_cluster16
+Chironomidae_cluster13
+Chironomidae_cluster3
+Entomobryidae_cluster11
+Entomobryidae_cluster8
+Chironomidae_cluster12
+Entomobryidae_cluster2
+Chironomidae_cluster5
+Chironomidae_cluster27
+Chironomidae_cluster29
+Trogiidae_cluster1
+Entomobryidae_cluster4
+Entomobryidae_cluster10
+Entomobryidae_cluster1
+Scelionidae_cluster2
+Chironomidae_cluster15
+Cecidomyiidae_cluster42
+Stenopsocidae_cluster3
+Chironomidae_cluster9
+Cecidomyiidae_cluster18
+Chironomidae_cluster152
+Stenopsocidae_cluster2
+Cecidomyiidae_cluster13
+Chironomidae_cluster8
+Chironomidae_cluster1
+Entomobryidae_cluster3
+Ascidae_cluster2
+Lachesillidae_cluster1
+Entomobryidae_cluster5
+Chironomidae_cluster10
+Cecidomyiidae_cluster7
+Entomobryidae_cluster20
+Aphididae_cluster1
+Cecidomyiidae_cluster542
+Platygastridae_cluster4
+Cecidomyiidae_cluster22
+Entomobryidae_cluster30
+Caeciliusidae_cluster1
+Scelionidae_cluster1
+Orchesellidae_cluster1
+
+Order stats for clusters with the largest lysate surplus 
+Diptera -- 22 
+Entomobryomorpha -- 15 
+Psocodea -- 6 
+Hymenoptera -- 4 
+Hemiptera -- 1 
+Mesostigmata -- 1 
+Trombidiformes -- 1 
+
+Family stats for clusters with the largest lysate surplus 
+Chironomidae -- 15 
+Entomobryidae -- 14 
+Cecidomyiidae -- 6 
+Platygastridae -- 2 
+Scelionidae -- 2 
+Stenopsocidae -- 2 
+Aphididae -- 1 
+Ascidae -- 1 
+Bdellidae -- 1 
+Caeciliusidae -- 1 
+Ceratopogonidae -- 1 
+Lachesillidae -- 1 
+Orchesellidae -- 1 
+Peripsocidae -- 1 
+Trogiidae -- 1 
+
+Genus stats for clusters with the largest lysate surplus 
+Entomobrya -- 10 
+Limnophyes -- 8 
+Cecidomyiidae_X -- 6 
+Bryophaenocladius -- 3 
+Lepidocyrtus -- 3 
+Platygastridae_X -- 2 
+Scelionidae_X -- 2 
+Arctoseius -- 1 
+Bdellidae_X -- 1 
+Cerobasis -- 1 
+Euceraphis -- 1 
+Forcipomyia -- 1 
+Graphopsocus -- 1 
+Lachesilla -- 1 
+Metriocnemus -- 1 
+Orchesella -- 1 
+Paraphaenocladius -- 1 
+Peripsocus -- 1 
+Pseudosmittia -- 1 
+Smittia -- 1 
+
+The 50 clusters with the largest surplus of homogenate reads (difference in mean reads)
+Apidae_cluster1
+Apidae_cluster3
+Apidae_cluster17
+Throscidae_cluster2
+Formicidae_cluster2
+Throscidae_cluster1
+Formicidae_cluster3
+Formicidae_cluster4
+Vespidae_cluster2
+Elateridae_cluster2
+Polleniidae_cluster4
+Polleniidae_cluster1
+Curculionidae_cluster10
+Polleniidae_cluster2
+Polleniidae_cluster3
+Ichneumonidae_cluster29
+Tabanidae_cluster1
+Mycetophilidae_cluster27
+Thomisidae_cluster2
+Syrphidae_cluster8
+Muscidae_cluster4
+Sciaridae_cluster51
+Humerobatidae_cluster1
+Coccinellidae_cluster1
+Mycetophilidae_cluster47
+Acrididae_cluster2
+Elachistidae_cluster2
+Mycetophilidae_cluster80
+Syrphidae_cluster4
+Cantharidae_cluster9
+Dolichopodidae_cluster4
+Anthomyiidae_cluster24
+Acrididae_cluster1
+Coccinellidae_cluster4
+Phoridae_cluster1
+Mymaridae_cluster3
+Mycetophilidae_cluster43
+Chrysomelidae_cluster1
+Lymexylidae_cluster1
+Hybotidae_cluster11
+Acanthosomatidae_cluster1
+Drosophilidae_cluster4
+Curculionidae_cluster8
+Latridiidae_cluster1
+Heleomyzidae_cluster2
+Braconidae_cluster11
+Syrphidae_cluster2
+Latridiidae_cluster4
+Anthomyiidae_cluster4
+Forficulidae_cluster2
+
+Order stats for clusters with the largest homogenate surplus 
+Diptera -- 21 
+Coleoptera -- 12 
+Hymenoptera -- 10 
+Orthoptera -- 2 
+Araneae -- 1 
+Dermaptera -- 1 
+Hemiptera -- 1 
+Lepidoptera -- 1 
+Sarcoptiformes -- 1 
+
+Family stats for clusters with the largest homogenate surplus 
+Mycetophilidae -- 4 
+Polleniidae -- 4 
+Apidae -- 3 
+Formicidae -- 3 
+Syrphidae -- 3 
+Acrididae -- 2 
+Anthomyiidae -- 2 
+Coccinellidae -- 2 
+Curculionidae -- 2 
+Latridiidae -- 2 
+Throscidae -- 2 
+Acanthosomatidae -- 1 
+Braconidae -- 1 
+Cantharidae -- 1 
+Chrysomelidae -- 1 
+Dolichopodidae -- 1 
+Drosophilidae -- 1 
+Elachistidae -- 1 
+Elateridae -- 1 
+Forficulidae -- 1 
+
+Genus stats for clusters with the largest homogenate surplus 
+Pollenia -- 4 
+Bombus -- 3 
+Cordyla -- 3 
+Chorthippus -- 2 
+Formica -- 2 
+Trixagus -- 2 
+Acnemia -- 1 
+Agonopterix -- 1 
+Anagrus -- 1 
+Anthomyia -- 1 
+Bradysia -- 1 
+Cartodere -- 1 
+Chrysotoxum -- 1 
+Coccinella -- 1 
+Cortinicara -- 1 
+Dalopius -- 1 
+Diapterobates -- 1 
+Diplonevra -- 1 
+Dolichopus -- 1 
+Elasmostethus -- 1 
+
+The 50 clusters with the smallest mean reads (lysates + homogenates)
+unclassified.Sarcoptiformes_cluster18
+Mymaridae_cluster1
+Hemileiidae_cluster1
+Proctotrupidae_cluster23
+Mymaridae_cluster6
+Trichogrammatidae_cluster1
+Ceraphronidae_cluster8
+Thripidae_cluster15
+Ceraphronidae_cluster5
+Scelionidae_cluster26
+Diapriidae_cluster8
+Diapriidae_cluster67
+Mymaridae_cluster3
+Diapriidae_cluster28
+Proctotrupidae_cluster2
+Latridiidae_cluster4
+Braconidae_cluster39
+Platygastridae_cluster3
+Ascidae_cluster2
+Diapriidae_cluster14
+Cecidomyiidae_cluster119
+Braconidae_cluster56
+Scelionidae_cluster4
+Proctotrupidae_cluster4
+Cecidomyiidae_cluster598
+Cecidomyiidae_cluster296
+Diapriidae_cluster3
+Diapriidae_cluster11
+Aphididae_cluster14
+Phoridae_cluster55
+Aphididae_cluster10
+Cecidomyiidae_cluster228
+Proctotrupidae_cluster1
+Cicadellidae_cluster33
+Aphididae_cluster25
+Braconidae_cluster29
+Mycetophilidae_cluster201
+Diapriidae_cluster4
+Braconidae_cluster11
+Sciaridae_cluster45
+Psychodidae_cluster35
+Mycetophilidae_cluster43
+Cecidomyiidae_cluster40
+Psychodidae_cluster8
+Mycetophilidae_cluster80
+Psychodidae_cluster6
+Anystidae_cluster4
+Encyrtidae_cluster2
+Thripidae_cluster5
+Cecidomyiidae_cluster147
+
+Order stats for clusters with the smallest mean reads 
+Hymenoptera -- 25 
+Diptera -- 14 
+Hemiptera -- 4 
+Sarcoptiformes -- 2 
+Thysanoptera -- 2 
+Coleoptera -- 1 
+Mesostigmata -- 1 
+Trombidiformes -- 1 
+
+Family stats for clusters with the smallest mean reads 
+Diapriidae -- 7 
+Cecidomyiidae -- 6 
+Braconidae -- 4 
+Proctotrupidae -- 4 
+Aphididae -- 3 
+Mycetophilidae -- 3 
+Mymaridae -- 3 
+Psychodidae -- 3 
+Ceraphronidae -- 2 
+Scelionidae -- 2 
+Thripidae -- 2 
+Anystidae -- 1 
+Ascidae -- 1 
+Cicadellidae -- 1 
+Encyrtidae -- 1 
+Hemileiidae -- 1 
+Latridiidae -- 1 
+Phoridae -- 1 
+Platygastridae -- 1 
+Sciaridae -- 1 
+
+Genus stats for clusters with the smallest mean reads 
+Cecidomyiidae_X -- 5 
+Psychoda -- 3 
+Anagrus -- 2 
+Ceraphronidae_X -- 2 
+Cordyla -- 2 
+Phaneroserphus -- 2 
+Zygota -- 2 
+Aclista -- 1 
+Anystidae_X -- 1 
+Aphididae_X -- 1 
+Arctoseius -- 1 
+Asteromyia -- 1 
+Belyta -- 1 
+Cartodere -- 1 
+Chorebus -- 1 
+Copidosoma -- 1 
+Corynoptera -- 1 
+Diapriidae_X -- 1 
+Dinotrema -- 1 
+Exallonyx -- 1 
