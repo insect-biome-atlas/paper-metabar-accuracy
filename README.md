@@ -22,7 +22,7 @@ All files contain full taxonomic information for the cluster. The last file is >
 Generates plots illustrating the distributions of calibrated read counts for lysates and homogenates for different groups of OTU clusters. The generated figures illustrate the following:
 
 Main figures:
-1.'Fig2_All_Samples_500_Ratio.jpg': Lysate-to-homogenate read ratios for 856 treatment pairs. Part of Figure 2 from the paper.
+1. 'Fig2_All_Samples_500_Ratio.jpg': Lysate-to-homogenate read ratios for 856 treatment pairs. Part of Figure 2 from the paper.
 2. 'Fig2_treatment_exclusive_clusters.jpg': Arthropod clusters detected exclusively in either lysates or homogenates, aggregated by family. Second part of Figure 2 from the paper.
 
 Supplementary figures:
