@@ -3,6 +3,10 @@ Repository with data and code for the ms evaluating the accuracy of occurrence a
 
 ## R scripts
 
+### `Accuracy_paper_map.R`
+Generates a map of Sweden with marked sampling points, where 856 homogenate-lysate sample pairs were collected. 
+It marks with color the six different habitats.
+
 ### `plot_abundance_calib.R`
 Generates plots illustrating the power of various calibration procedures using spike-ins in reducing the variance in read numbers. All samples with spike-in reads are used, that is, the lysate data are based on all lysate samples, not only the ones that were also homogenized.
 Only samples with all biological spike-ins and all synthetic spike-ins are kept.
