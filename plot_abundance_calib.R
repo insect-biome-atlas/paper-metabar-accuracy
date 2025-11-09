@@ -10,6 +10,22 @@ setwd("~/dev/ms-repos-iba/utils/")
 source("get_iba_co1_data_fxn.R")
 setwd(old_dir)
 
+# List names of spikeins
+bio_spikes <- c(
+                "Blattidae_cluster1",
+                "Gryllidae_cluster1",
+                "Gryllidae_cluster2",
+                "Drosophilidae_cluster1",
+                "Drosophilidae_cluster2",
+                "Drosophilidae_cluster3"
+                )
+synth_spikes <- c("Callio-synth","tp53-synth")
+
+# Define specimen numbers for spikeins
+bio_specimens <- c(2,1,1,3,1,1)
+
+# Define x axis labels
+x_labels <- c("Sh.la","Gr.bi","Gr.su","Dr.bi","Dr.se","Dr.ja")
 
 # Define plot function 
 vio_plot <- function(D,x_labels) {
@@ -20,10 +36,97 @@ vio_plot <- function(D,x_labels) {
         scale_x_discrete(labels=x_labels)
 }
 
+# Define calibration functions
+calibrate_reads_bio <- function(X) {
+
+    # Convert input data to long format
+    D <- reshape2::melt(X,id="cluster",variable.name="sample",value.name="reads")
+
+    # Leave-One-Out (LOO) calibration
+    X_LOO <- X[FALSE,]
+    for (i in 1:nrow(X)) {
+        x <- colSums(X[-i,-1])
+        X_LOO <- rbind(X_LOO,as.list(c(cluster=X$cluster[i],x)))
+    }
+
+    E <- reshape2::melt(X_LOO,id="cluster",variable.name="sample",value.name="spikein_reads")
+
+    D$cluster <- factor(D$cluster,levels=bio_spikes)
+    E$cluster <- factor(E$cluster,levels=bio_spikes)
+    D$reads <- as.numeric(D$reads)
+    E$spikein_reads <- as.numeric(E$spikein_reads)
+    D <- merge(D,E)
+
+    D$mean <- numeric(nrow(D))
+    D$residual <- numeric(nrow(D))
+
+    # Fit the linear model
+    for (i in 1:length(bio_spikes)) {
+        cluster <- bio_spikes[i]
+        specimens <- bio_specimens[i]
+        idx <- D$cluster == cluster
+        D$reads[idx] <- D$reads[idx] / specimens    # Measure reads/specimen
+        fit <- lm(D$reads[idx]~D$spikein_reads[idx]+0)
+        D$residual[idx] <- fit$residuals
+        D$mean[idx] <- mean(D$reads[idx])
+    }
+    D$calibrated_reads <- D$mean*(D$reads/(D$reads-D$residual))
+    
+    return(D)
+}
+
+calibrate_reads_bio_synth <- function(X) {
+
+    # Make data version with only synthetic spikeins
+    XS <- X[grepl("synth",X$cluster),]
+    
+    # Make data version with only biological spikeins
+    XB <- X[!grepl("synth",X$cluster),]
+    
+    # Calibrate with only bio spikeins
+    D <- calibrate_reads_bio(XB)
+
+    # Rename spikein_reads to bio_reads
+    idx <- which(colnames(D)=="spikein_reads")
+    colnames(D)[idx] <- "bio_reads"
+
+    # Rename calibrated_reads to bio_calibrated_reads
+    idx <- which(colnames(D)=="calibrated_reads")
+    colnames(D)[idx] <- "bio_calibrated_reads"
+
+    # Summarize synthetic spike-in reads
+    XB_S <- XB[FALSE,]
+    x <- colSums(XS[,-1])
+    for (i in 1:nrow(XB)) {
+        XB_S <- rbind(XB_S,as.list(c(cluster=XB$cluster[i],x)))
+    }
+    E <- reshape2::melt(XB_S,id="cluster",variable.name="sample",value.name="synth_reads")
+
+    E$cluster <- factor(E$cluster,levels=bio_spikes)
+    E$synth_reads <- as.numeric(E$synth_reads)
+
+    D <- merge(D,E)
+
+    # Fit the linear models for synth and bio+synth spikeins
+    for (i in 1:length(bio_spikes)) {
+        cluster <- bio_spikes[i]
+        specimens <- bio_specimens[i]
+        idx <- D$cluster == cluster
+        fit1 <- lm(D$reads[idx]~D$synth_reads[idx]+0)
+        fit2 <- lm(D$reads[idx]~D$synth_reads[idx]+D$bio_reads[idx]+0)
+        D$residual1[idx] <- fit1$residuals
+        D$residual2[idx] <- fit2$residuals
+    }
+    D$synth_calibrated_reads <- D$mean*(D$reads/(D$reads-D$residual1))
+    D$spikein_calibrated_reads <- D$mean*(D$reads/(D$reads-D$residual2))
+
+    return(D)
+}
 
 # Get homogenate and lysate data
 data_path <- "~/dev/figshare-repos/iba/processed_data/v3/"
-metadata_path <- "~/dev/figshare-repos/iba/raw_data/v4/"
+metadata_path <- "~/dev/figshare-repos/iba/raw_data/v6/"
+cat("Getting lysate data\n")
 L <- get_iba_co1_data(
                       data_path=data_path,
                       metadata_path=metadata_path,
@@ -32,6 +135,7 @@ L <- get_iba_co1_data(
                       calibrate=FALSE,
                       remove_spikes=FALSE
                     )
+cat("Getting homogenate data\n")
 H <- get_iba_co1_data(
                       data_path=data_path,
                       metadata_path=metadata_path,
@@ -40,10 +144,10 @@ H <- get_iba_co1_data(
                       calibrate=FALSE,
                       remove_spikes=FALSE
                      )
+cat("Completed reading of all data; computing plots\n")
 
 L <- data.frame(L)
 H <- data.frame(H)
-
 
 # Find sample columns
 colnames(L) -> x
@@ -65,157 +169,60 @@ HS <- H[spikeins_H,c(which(colnames(H)=="cluster"),sample_cols_H)]
 LSA <- LS[,c(TRUE,colMeans(LS[,-1]>0)>0.95)]
 HSA <- HS[,c(TRUE,colMeans(HS[,-1]>0)>0.95)]
 
-# Make homogenate data version with only bio spikeins
-HSAB <- HSA[!grepl("synth",HSA$cluster),]
-
-# Make homogenate data version with only synthetic spikeins
-HSAS <- HSA[grepl("synth",HSA$cluster),]
-
-# List names of spikeins
-bio_spikes <- c(
-                "Blattidae_cluster1",
-                "Gryllidae_cluster1",
-                "Gryllidae_cluster2",
-                "Drosophilidae_cluster1",
-                "Drosophilidae_cluster2",
-                "Drosophilidae_cluster3"
-                )
-synth_spikes <- c("Callio-synth","tp53-synth")
-
-# Define x axis labels
-x_labels <- c("Sh.la","Gr.bi","Gr.su","Dr.bi","Dr.se","Dr.ja")
-
 
 # Violin plots for L counts (raw/calibrated with biological spike-ins)
 # -------------------------------------------------------------------
 
-# Raw values
-D <- reshape2::melt(LSA,id="cluster",value.name="reads")
+# Calibrate reads based on bio spikeins; this will return data in long format
+D <- calibrate_reads_bio(LSA)
 
-# Calibrate using geometric mean (leads to smaller variances than arithmetic mean)
-# Leave-One-Out (LOO) calibration
-LSA_LOO <- LSA[FALSE,]
-for (i in 1:nrow(LSA)) {
-    x <- log10(colSums(LSA[-i,-1]))
-    f <- mean(x) - x
-    LSA_LOO <- rbind(LSA_LOO,as.list(c(cluster=LSA$cluster[i],(10^f)*as.numeric(LSA[i,-1]))))
-}
-E <- reshape2::melt(LSA_LOO,id="cluster",value.name="reads")
-
-D$cluster <- factor(D$cluster,levels=bio_spikes)
-E$cluster <- factor(E$cluster,levels=bio_spikes)
-D$reads <- as.numeric(D$reads)
-E$reads <- as.numeric(E$reads)
-
+# Generate the plots
 p1 <- vio_plot(D, x_labels)
-p2 <- vio_plot(E, x_labels)
+p2 <- vio_plot(data.frame(list(cluster=D$cluster, reads=D$calibrated_reads)), x_labels)
 ggsave(file="Fig_lysate_cals.jpg", height=3.5, width=7, plot = p1 + p2)
 
 
 # Violin plots for H counts (raw/calibrated using syn/bio/both spike-ins) 
 # -----------------------------------------------------------------------
 
-# Raw values
-D1 <- reshape2::melt(HSAB,id="cluster",value.name="reads")
+# Calibrate reads based on bio and synth spikeins; this will return data in long format
+DH <- calibrate_reads_bio_synth(HSA)
 
-# Calibrate using synthetic spike-ins
-HSAB_S <- HSAB[FALSE,]
-for (i in 1:nrow(HSAB)) {
-    x <- log10(colSums(HSAS[,-1]))
-    f <- mean(x) - x
-    HSAB_S <- rbind(HSAB_S,as.list(c(cluster=HSAB$cluster[i],(10^f)*as.numeric(HSAB[i,-1]))))
-}
-D2 <- reshape2::melt(HSAB_S,id="cluster",value.name="reads")
-
-
-# Calibrate using biological spike-ins
-# Leave-One-Out (LOO) calibration
-HSAB_LOO <- HSAB[FALSE,]
-for (i in 1:nrow(HSAB)) {
-    x <- log10(colSums(HSAB[-i,-1]))
-    f <- mean(x) - x
-    HSAB_LOO <- rbind(HSAB_LOO,as.list(c(cluster=HSAB$cluster[i],(10^f)*as.numeric(HSAB[i,-1]))))
-}
-D3 <- reshape2::melt(HSAB_LOO,id="cluster",value.name="reads")
-
-
-# Calibrate using both synthetic and biological spike-ins,
-# in a linear model (of log effects) fitted to observed
-# read numbers. This is a theoretical maximum in variance
-# reduction; an LOO exercise, analogous to deriving a calibration
-# curve for (n-1) samples  before predicting the nth sample, is
-# likely to yield similar results
-HSAB_S_LOO_lm <- HSAB[FALSE,]
-y <- log10(colSums(HSAS[,-1]))
-z_y <- (y - mean(y)) / sd(y)
-for (i in 1:nrow(HSAB)) {
-    d <- log10(colSums(HSAB[-i,-1])) - y # This represents the biological spike-in info after dividing by the PCR factor evidenced by synthetic spike-ins (y)
-    z_d <- (d - mean(d)) / sd(d)
-    x <- log10(colSums(HSAB[i,-1]))
-    z_x <- (x - mean(x)) / sd(x)
-    fit <- lm(as.numeric(x) ~ as.numeric(y) + as.numeric(d))
-#    print (fit)
-#    print(summary(fit))
-    f <- mean(x) + fit$residuals
-    names(f) <- colnames(HSAB)[-1]
-    HSAB_S_LOO_lm <- rbind(HSAB_S_LOO_lm,as.list(c(cluster=HSAB$cluster[i],10^f)))
-}
-D4 <- reshape2::melt(HSAB_S_LOO_lm,id="cluster",value.name="reads")
-
-
-# Calibrate using first synthetic then biological spike-ins
-# Here we combine the evidence from the synthetic spike-ins
-# and biological spike-ins by converting the deviation to
-# standard normal terms, and then scaling the deviation up
-# to the same standard deviation as the two component
-# distributions. This gives a slightly better result than
-# just combining the two deviations, which is exactly the
-# same thing as just using the biological spike-in information.
-# The standard deviation of the two component distributions is
-# fairly similar, so the synthetic spike-ins do not add a lot
-# more information to that of the biological spike-ins
-# It is possible to lower the sd of some species a little more
-# by weighting the deviations from the two components differently
-# but the method below lowers the sd of all but one species.
-HSAB_S_LOO <- HSAB[FALSE,]
-y <- log10(colSums(HSAS[,-1]))
-z_y <- (y - mean(y)) / sd(y)
-for (i in 1:nrow(HSAB)) {
-    x <- log10(colSums(HSAB[-i,-1]))
-    d <- x - y  # This represents the biological spike-in info after dividing by the PCR factor evidenced by synthetic spike-ins (y)
-    z_d <- (d - mean(d)) / sd(d)
-    z <- z_y + z_d  # Now we have desired balanced deviation for each sample
-    f <- sqrt( (sd(d)^2 + sd(y)^2)/2 ) * z  # z-based deviation, lowering sd for 5 of 6 species
-#    f <- 1.0*((x-y)-mean(x-y)) + 1.0*(y - mean(y)) # For comparison, this is the naive combination, which is identical to just using biological spike-ins
-#    f <- ((2*sd(y)^2)/(sd(d)^2 + sd(y)^2))*(d-mean(d)) + ((2*sd(d)^2)/(sd(d)^2 + sd(y)^2))*(y-mean(y)) # Empirically found good combination (lowers sd for 3 of 6 spp)
-#    f <- 0.85*((x-y)-mean(x-y)) + 1.0*(y - mean(y)) # Good combination
-    HSAB_S_LOO <- rbind(HSAB_S_LOO,as.list(c(cluster=HSAB$cluster[i],HSAB[i,-1]/as.numeric(10^f))))
-}
-#D4 <- reshape2::melt(HSAB_S_LOO,id="cluster",value.name="reads")
-
-D1$cluster <- factor(D1$cluster,levels=bio_spikes)
-D2$cluster <- factor(D2$cluster,levels=bio_spikes)
-D3$cluster <- factor(D3$cluster,levels=bio_spikes)
-D4$cluster <- factor(D4$cluster,levels=bio_spikes)
-D1$reads <- as.numeric(D1$reads)
-D2$reads <- as.numeric(D2$reads)
-D3$reads <- as.numeric(D3$reads)
-D4$reads <- as.numeric(D4$reads)
-
-# Uncomment this code to print standard deviations for all calibrations
-#for (spike in bio_spikes) {
-#    cat("Mean and stdevs (log scale) for",spike,"\n")
-#    cat("raw:",mean(log10(D1$reads[D1$cluster==spike])),"--",sd(log10(D1$reads[D1$cluster==spike])),"\n")
-#    cat("syn-calibrated:",mean(log10(D2$reads[D2$cluster==spike])),"--",sd(log10(D2$reads[D2$cluster==spike])),"\n")
-#    cat("bio-calibrated:",mean(log10(D3$reads[D3$cluster==spike])),"--",sd(log10(D3$reads[D3$cluster==spike])),"\n")
-#    cat("syn-bio-calibrated:",mean(log10(D4$reads[D4$cluster==spike])),"--",sd(log10(D4$reads[D4$cluster==spike])),"\n")
-#}
-
-p3 <- vio_plot(D1, x_labels)
-p4 <- vio_plot(D2, x_labels)
-p5 <- vio_plot(D3, x_labels)
-p6 <- vio_plot(D4, x_labels)
+p3 <- vio_plot(DH, x_labels)
+p4 <- vio_plot(data.frame(list(cluster=DH$cluster, reads=DH$synth_calibrated_reads)), x_labels)
+p5 <- vio_plot(data.frame(list(cluster=DH$cluster, reads=DH$bio_calibrated_reads)), x_labels)
+p6 <- vio_plot(data.frame(list(cluster=DH$cluster, reads=DH$spikein_calibrated_reads)), x_labels)
 ggsave(file="Fig_homogenate_cals.jpg", height=7, width=7, plot = (p3 + p4)/(p5 + p6))
 
 # Join all calibrations in one figure
 ggsave(file="Fig_calibrations.jpg", height=10.5, width=7, plot = (p1 + p2 + p3 + p4 + p5 + p6) + plot_layout(axis_titles="collect",ncol=2) + plot_annotation(tag_levels="A"))
+
+
+# Repeat plots with only samples for which there is both lysate and homogenate data
+# ---------------------------------------------------------------------------------
+
+# Restrict LSA and HSA datasets to shared samples
+M <- read.delim("~/dev/figshare-repos/iba/raw_data/v6/CO1_sequencing_metadata_SE.tsv")
+field_sample <- function(x) { M$sampleID_FIELD[match(x,M$sampleID_NGI)] }
+x <- field_sample(colnames(LSA)[-1])
+y <- field_sample(colnames(HSA)[-1])
+LSA_idx <- c(1, 1+which(x %in% y))
+HSA_idx <- c(1, 1+which(y %in% x))
+LSS <- LSA[,LSA_idx]
+HSS <- HSA[,HSA_idx]
+
+# Calibrate the reads
+D <- calibrate_reads_bio(LSA)
+DH <- calibrate_reads_bio_synth(HSA)
+
+# Generate the plots
+p1 <- vio_plot(D, x_labels)
+p2 <- vio_plot(data.frame(list(cluster=D$cluster, reads=D$calibrated_reads)), x_labels)
+p3 <- vio_plot(DH, x_labels)
+p4 <- vio_plot(data.frame(list(cluster=DH$cluster, reads=DH$synth_calibrated_reads)), x_labels)
+p5 <- vio_plot(data.frame(list(cluster=DH$cluster, reads=DH$bio_calibrated_reads)), x_labels)
+p6 <- vio_plot(data.frame(list(cluster=DH$cluster, reads=DH$spikein_calibrated_reads)), x_labels)
+
+# Join all calibrations for shared samples in one figure
+ggsave(file="Fig_calibrations_shared.jpg", height=10.5, width=7, plot = (p1 + p2 + p3 + p4 + p5 + p6) + plot_layout(axis_titles="collect",ncol=2) + plot_annotation(tag_levels="A"))
+
