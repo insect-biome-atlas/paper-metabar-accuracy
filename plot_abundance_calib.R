@@ -33,7 +33,8 @@ vio_plot <- function(D,x_labels) {
         theme_minimal() +
         geom_violin() +
         ylim(c(-0.05,6.5)) +
-        scale_x_discrete(labels=x_labels)
+        scale_x_discrete(name="Species", labels=x_labels) +
+        ylab("Reads per specimen (log10)")
 }
 
 # Define calibration functions
@@ -114,6 +115,7 @@ calibrate_reads_bio_synth <- function(X) {
         idx <- D$cluster == cluster
         fit1 <- lm(D$reads[idx]~D$synth_reads[idx]+0)
         fit2 <- lm(D$reads[idx]~D$synth_reads[idx]+D$bio_reads[idx]+0)
+#        print(summary(fit2))
         D$residual1[idx] <- fit1$residuals
         D$residual2[idx] <- fit2$residuals
     }
@@ -179,7 +181,7 @@ D <- calibrate_reads_bio(LSA)
 # Generate the plots
 p1 <- vio_plot(D, x_labels)
 p2 <- vio_plot(data.frame(list(cluster=D$cluster, reads=D$calibrated_reads)), x_labels)
-ggsave(file="Fig_lysate_cals.jpg", height=3.5, width=7, plot = p1 + p2)
+# ggsave(file="Fig_lysate_cals.jpg", height=3.5, width=7, plot = p1 + p2)
 
 
 # Violin plots for H counts (raw/calibrated using syn/bio/both spike-ins) 
@@ -192,7 +194,7 @@ p3 <- vio_plot(DH, x_labels)
 p4 <- vio_plot(data.frame(list(cluster=DH$cluster, reads=DH$synth_calibrated_reads)), x_labels)
 p5 <- vio_plot(data.frame(list(cluster=DH$cluster, reads=DH$bio_calibrated_reads)), x_labels)
 p6 <- vio_plot(data.frame(list(cluster=DH$cluster, reads=DH$spikein_calibrated_reads)), x_labels)
-ggsave(file="Fig_homogenate_cals.jpg", height=7, width=7, plot = (p3 + p4)/(p5 + p6))
+# ggsave(file="Fig_homogenate_cals.jpg", height=7, width=7, plot = (p3 + p4)/(p5 + p6))
 
 # Join all calibrations in one figure
 ggsave(file="Fig_calibrations.jpg", height=10.5, width=7, plot = (p1 + p2 + p3 + p4 + p5 + p6) + plot_layout(axis_titles="collect",ncol=2) + plot_annotation(tag_levels="A"))
