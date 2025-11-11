@@ -49,19 +49,10 @@ increment <- function(includes) {
 }
 
 
-# Define plot function
-vio_plot <- function(D,x_labels) {
-    ggplot(data=D, aes(x=cluster, y=log10(reads))) + 
-        theme_minimal() +
-        geom_violin() +
-        ylim(c(-0.05,6.5)) +
-        scale_x_discrete(labels=x_labels)
-}
-
-
 # Get homogenate and lysate data
 data_path <- "~/dev/figshare-repos/iba/processed_data/v3/"
 metadata_path <- "~/dev/figshare-repos/iba/raw_data/v6/"
+cat("Getting lysate data\n")
 L <- get_iba_co1_data(
                       data_path=data_path,
                       metadata_path=metadata_path,
@@ -70,6 +61,7 @@ L <- get_iba_co1_data(
                       calibrate=FALSE,
                       remove_spikes=FALSE
                     )
+cat("Getting homogenate data\n"
 H <- get_iba_co1_data(
                       data_path=data_path,
                       metadata_path=metadata_path,
@@ -81,6 +73,8 @@ H <- get_iba_co1_data(
 
 L <- data.frame(L)
 H <- data.frame(H)
+
+cat("Computing plots\n")
 
 
 # Find sample columns
@@ -133,7 +127,7 @@ D <- data.frame(list(
                     Dr.bi=logical(),
                     Dr.se=logical(),
                     Dr.ja=logical(),
-                    stddev=numeric()
+                    coeff_var=numeric()
                     )
                 )
 E <- D
@@ -220,13 +214,20 @@ for (i in 1:length(bio_spikes)) {
 
 
 # Make plots
-pdf("Fig_0to5_lysate_cal_stddev.pdf")
-plot(D$stddev~D$num_includes,xlab="No. spike-ins",ylab="Std dev (log10)",main="Lysate calibration")
-dev.off()
+p1 <- ggplot(data=D, aes(x=num_includes, y=coeff_var, colour=factor(spikein)) +
+             theme_minimal() +
+             scale_x_discrete(name="No. calibrator spike-ins", labels=x_labels) +
+             geom_point(size=3) +
+             scale_y_continuous(name="Coefficient of variation",trans="log10")
+         )
+p2 <- ggplot(data=E, aes(x=num_includes, y=coeff_var, colour=factor(spikein)) +
+             theme_minimal() +
+             scale_x_discrete(name="No. calibrator spike-ins", labels=x_labels) +
+             geom_point(size=3) +
+             scale_y_continuous(name="Coefficient of variation",trans="log10")
+         )
+ggsave(file="Figures/Fig_0to5_calibrations_CV.jpg", height=3.5, width=7, plot = (p1 + p2) + plot_layout(axis_titles="collect",ncol=2) + plot_annotation(tag_levels="A"))
 
-pdf("Fig_0to5_homogenate_cal_stddev.pdf")
-plot(E$stddev~E$num_includes,xlab="No. spike-ins",ylab="Std dev (log10)",main="Homogenate calibration")
-dev.off()
 
 #––– Single-spikein performance –––––––––––––––––––––––––––––––––––––––––––––––––
 
