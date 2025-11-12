@@ -10,24 +10,24 @@ D <- read.delim("matched_lysate_homogenate.tsv")
 D <- D[D$lysate_reads > 0 | D$homogenate_reads > 0,]
 
 # Extract taxonomic info about the clusters
-T <- D[!duplicated(D$cluster),!grepl("reads",colnames(D))]
+Ts <- D[!duplicated(D$cluster),!grepl("reads",colnames(D))]
 
 # Define function for printing taxonomic summary for a cluster set
 tax_stats <- function(spec,clusters) {
     cat("\nOrder stats for",spec,"\n",file=file,append=TRUE)
-    x <- sort(table(T$Order[T$cluster %in% clusters]),decreasing=TRUE)
+    x <- sort(table(Ts$Order[Ts$cluster %in% clusters]),decreasing=TRUE)
     if (length(x)>20)
         x <- x[1:20]
     print_table(x)
 
     cat("\nFamily stats for",spec,"\n",file=file,append=TRUE)
-    x <- sort(table(T$Family[T$cluster %in% clusters]),decreasing=TRUE)
+    x <- sort(table(Ts$Family[Ts$cluster %in% clusters]),decreasing=TRUE)
     if (length(x)>20)
         x <- x[1:20]
     print_table(x)
 
     cat("\nGenus stats for",spec,"\n",file=file,append=TRUE)
-    x <- sort(table(T$Genus[T$cluster %in% clusters]),decreasing=TRUE)
+    x <- sort(table(Ts$Genus[Ts$cluster %in% clusters]),decreasing=TRUE)
     if (length(x)>20)
         x <- x[1:20]
     print_table(x)
@@ -58,8 +58,8 @@ cat("This represents",round(100*sum(D$homogenate_reads==0)/nrow(D),digits=2),"% 
 uniq_lys <- lysates[!(lysates %in% homogenates)]
 uniq_hom <- homogenates[!(homogenates %in% lysates)]
 
-tax_stats("clusters found only in lysates",uniq_lys)
-tax_stats("clusters found only in homogenates",uniq_hom)
+tax_stats("clusters found only in lysates", uniq_lys)
+tax_stats("clusters found only in homogenates", uniq_hom)
 
 lys_miss <- unique(D$cluster[D$lysate_reads==0])
 hom_miss <- unique(D$cluster[D$homogenate_reads==0])
@@ -69,14 +69,14 @@ tax_stats("cluster occurrences missed in homogenates",hom_miss)
 
 # Keep the clusters occurring in more than 100 samples
 x <- sort(table(D$cluster),decreasing=TRUE)
-F <- D[D$cluster %in% names(x[x>100]),]
-F$cluster <- factor(F$cluster,levels=names(x[x>100]))
+Fs <- D[D$cluster %in% names(x[x>100]),]
+Fs$cluster <- factor(Fs$cluster,levels=names(x[x>100]))
 
 lys_sample_mean <- sum(D$lysate_reads)/length(unique(D$sample))
 hom_sample_mean <- sum(D$homogenate_reads)/length(unique(D$sample))
 
-L <- aggregate(F$lysate_reads[F$lysate_reads!=0]~F$cluster[F$lysate_reads!=0],FUN=mean)
-H <- aggregate(F$homogenate_reads[F$homogenate_reads!=0]~F$cluster[F$homogenate_reads!=0],FUN=mean)
+L <- aggregate(Fs$lysate_reads[Fs$lysate_reads!=0]~Fs$cluster[Fs$lysate_reads!=0],FUN=mean)
+H <- aggregate(Fs$homogenate_reads[Fs$homogenate_reads!=0]~Fs$cluster[Fs$homogenate_reads!=0],FUN=mean)
 #L <- aggregate(F$lysate_reads~F$cluster,FUN=mean)
 #H <- aggregate(F$homogenate_reads~F$cluster,FUN=mean)
 colnames(L) <- c("cluster","mean_lys_reads")

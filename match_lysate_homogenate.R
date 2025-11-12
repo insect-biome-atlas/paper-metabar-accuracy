@@ -23,6 +23,22 @@ H <- get_iba_co1_data(data_path, metadata_path, country="SE", dataset="homogenat
 L1 <- data.frame(L)
 H1 <- data.frame(H)
 
+# Get basic stats on the lysates:
+###Number of reds per sample
+x <- colnames(L1)
+samples <- grepl("_",x) & grepl("P",x)
+Sums<-colSums(L1[samples])
+###Filter one failed sample with only 1 read
+SumsFilt<- subset(Sums, Sums>1000)
+
+###Mean and Sd
+summary(Sums)
+str(SumsFilt)
+mean(Sums)
+mean(SumsFilt)
+sd(SumsFilt)
+
+
 # Get sample metadata
 M <- read.delim(paste0(metadata_path,"CO1_sequencing_metadata_SE.tsv"))
 

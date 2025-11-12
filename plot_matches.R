@@ -1,5 +1,4 @@
 # Plot matches of lysate and homogenate reads
-
 library(reshape2)
 library(ggplot2)
 library(patchwork)
@@ -8,8 +7,11 @@ library(tidyr)
 library(stringr)
 
 # Get matched data
-D <- read.delim("matched_lysate_homogenate.tsv")
+D <- read.delim("matched_lysate_homogenate.tsv.gz")
 D <- D[D$lysate_reads >0 | D$homogenate_reads > 0,]
+
+# Sample metadata file from figshare repo:
+meta_Biomass <- read.delim("~/Desktop/git/figshare-repos/iba/raw_data/v6/samples_metadata_malaise_SE.tsv")
 
 #EXPLORATORY
 ## limiting number of taxa shown
@@ -129,17 +131,11 @@ D_filtered_plot_500 <- D_filtered_plot %>%
   filter(n() >= 500) %>%
   ungroup()
 
-
 # Boxplot split by Order
 as<-ggplot(D_filtered_plot_500, aes(x = lys_homog_ratio, y = Family, fill = Order)) +
   geom_violin(alpha = 0.5, trim = TRUE, color = NA) +   # density shape
   geom_boxplot(alpha = 0.5, outlier.shape = NA, color = "black") +
-  #geom_jitter(width = 0.05, size = 0.7, alpha = 0.3, color = "black") +  # small & transparent points
-  #geom_jitter(
-  # data = ~ dplyr::sample_n(., min(500, nrow(.))),  # max 500 points per facet
-  #  width = 0.05, size = 0.7, alpha = 0.3
-  #) +
-  geom_vline(xintercept = 1, linetype = "dashed", color = "gray40") +
+  geom_vline(xintercept = 1, linetype = "dashed", color = "red") +
   scale_x_log10() +
   facet_grid(rows = vars(Order), scales = "free_y", space = "free_y") +
   theme_minimal() +
@@ -156,8 +152,8 @@ as<-ggplot(D_filtered_plot_500, aes(x = lys_homog_ratio, y = Family, fill = Orde
     axis.text.y = element_text(size = 12)   # Family labels 
   )
 as
-ggsave(file="Fig2_All_Samples_500_Ratio.jpg", height=13, width=7, plot = as)
-
+ggsave(file="Figures/Fig2_All_Samples_500_Ratio.jpg", height=13, width=7, plot = as)
+?scale_x_log10()
 ### "ZERO clusters"
 ####### Look at those clusters that had count of 0 in one or the other treatment (lysis/homog)
 # subset with zeros in either lysate or homogenate
@@ -234,9 +230,78 @@ p2
 ggsave(file="Fig2_treatment_exclusive_clusters.jpg", height=13, width=7, plot = p2)
 
 ####
-####
-####
-####
+# Plot homogenate to lysate OTU ratio (y axis) and reads/mg (x axis) for the 856 samples.
+
+## Add biomass (meta_Biomass) info to the counts (D_filtered)
+merged <- merge(
+  D_filtered,
+  meta_Biomass,
+  by.x = "sample",            # column name in ASV table
+  by.y = "sampleID_FIELD",    # column name in biomass table
+  all.x = TRUE                # keep all ASV rows even if biomass missing
+)
+head(merged)
+
+# Calculate ration of total no. of homogenate clusters / total number of lysate clusters:
+summary_per_sample <- merged %>%
+  group_by(sample) %>%
+  summarise(
+    # Counts of clusters
+    clusters_lys = sum(as.numeric(lysate_reads) > 0, na.rm = TRUE),
+    clusters_homog = sum(as.numeric(homogenate_reads) > 0, na.rm = TRUE),
+    clusters_shared = sum(
+      (as.numeric(lysate_reads) > 0) & (as.numeric(homogenate_reads) > 0),
+      na.rm = TRUE
+    ),
+    
+    # Ratios
+    ratio_homog_lys = clusters_homog / clusters_lys,
+    ratio_shared_lys = clusters_shared / clusters_lys,
+    
+    # Total reads per sample
+    total_lys_reads = sum(as.numeric(lysate_reads), na.rm = TRUE),
+    total_homog_reads = sum(as.numeric(homogenate_reads), na.rm = TRUE),
+    
+    # biomass info
+    biomass_grams = unique(biomass_grams)
+  )
+
+# View the result
+head(summary_per_sample)
+
+# Save to CSV
+#write.csv(summary_per_sample, "cluster_summary_per_sample.csv", row.names = FALSE)
+
+library(ggplot2)
+library(dplyr)
+
+# Calculate and store the ratio for plotting
+plot_data <- summary_per_sample %>%
+  mutate(
+    reads_per_biomass = total_homog_reads / biomass_grams
+  )
+
+filtered_plot_data <- plot_data %>%
+  filter(reads_per_biomass > 100)  # adjust threshold based on your data
+
+rr<-ggplot(filtered_plot_data, aes(x = reads_per_biomass, y = ratio_shared_lys)) +
+  geom_point(size = 3, alpha = 0.6, color = "darkgreen") +
+  geom_smooth(method = "lm", se = TRUE, color = "black", linetype = "dashed") +
+  scale_x_log10() +
+  labs(
+    x = "Homogenate reads per gram biomass (log10 scale)",
+    y = "Proportion of lysate clusters also in homogenate",
+    #title = "Shared cluster ratio vs. homogenate sequencing effort",
+    #subtitle = "Per-sample comparison (log-scaled x-axis)"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(face = "bold")
+  )
+ggsave(file="Fig_S99_ratio_homogenate_retrieval.jpg", height=7, width=8, plot = rr)
+
+
 
 
 #### for the selected 15 samples only:

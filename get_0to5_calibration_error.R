@@ -2,8 +2,8 @@
 # Swedish IBA data, using each spikein as a calibration target,
 # and 0 to 5 of the other spikeins for calibration
 
-old_dir <- getwd()
-setwd("~/dev/ms-repos-iba/utils/")
+old_dir <- "~/Desktop/git/paper-metabar-accuracy/"
+setwd("~/Desktop/git/utils_Nov2025/")
 source("get_iba_co1_data_fxn.R")
 setwd(old_dir)
 
@@ -45,8 +45,8 @@ increment <- function(includes) {
 
 
 # Get homogenate and lysate data
-data_path <- "~/dev/figshare-repos/iba/processed_data/v3/"
-metadata_path <- "~/dev/figshare-repos/iba/raw_data/v6/"
+data_path <- "~/Desktop/git/figshare-repos/iba/processed_data/v3/"
+metadata_path <- "~/Desktop/git/figshare-repos/iba/raw_data/v6/"
 cat("Getting lysate data\n")
 L <- get_iba_co1_data(
                       data_path=data_path,

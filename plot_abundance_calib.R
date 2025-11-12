@@ -4,6 +4,8 @@
 library(reshape2)
 library(ggplot2)
 library(patchwork)
+library(RColorBrewer)
+library(patchwork)
 
 old_dir <- getwd()
 setwd("~/dev/ms-repos-iba/utils/")
@@ -20,6 +22,7 @@ bio_spikes <- c(
                 "Drosophilidae_cluster3"
                 )
 synth_spikes <- c("Callio-synth","tp53-synth")
+spike_species <- c("Shelfordella lateralis","Gryllus bimaculatus","Gryllodes sigillatus ","Drosophila bicornuta","Drosophila serrata","Drosophila jambolina")
 
 # Define specimen numbers for spikeins
 bio_specimens <- c(2,1,1,3,1,1)
@@ -28,13 +31,23 @@ bio_specimens <- c(2,1,1,3,1,1)
 x_labels <- c("Sh.la","Gr.bi","Gr.su","Dr.bi","Dr.se","Dr.ja")
 
 # Define plot function 
-vio_plot <- function(D,x_labels) {
-    ggplot(data=D, aes(x=cluster, y=log10(reads))) + 
-        theme_minimal() +
-        geom_violin() +
-        ylim(c(-0.05,6.5)) +
-        scale_x_discrete(name="Species", labels=x_labels) +
-        ylab("Reads per specimen (log10)")
+vio_plot <- function(D, x_labels, plot_title = NULL) {
+  ggplot(data = D, aes(x = cluster, y = log10(reads), fill = cluster)) +
+    theme_minimal() +
+    geom_violin(alpha = 0.6, color = "grey30") +
+    ylim(c(-0.05, 6.5)) +
+    scale_x_discrete(name = NULL, labels = NULL) +  # drop x labels
+    scale_fill_manual(values = custom_cols, labels = spike_species, name = "Species") +
+    ylab("Reads per specimen (log10)") +
+    ggtitle(plot_title) +
+    theme(
+      legend.position = "bottom",
+      legend.title = element_text(size = 10),
+      legend.text = element_text(size = 9),
+      plot.title = element_text(hjust = 0.5, face = "bold", size = 11),
+      axis.text.x = element_blank(),
+      axis.ticks.x = element_blank()
+    )
 }
 
 # Define calibration functions
@@ -182,26 +195,29 @@ HSA <- HS[,c(TRUE,colMeans(HS[,-1]>0)>0.95)]
 D <- calibrate_reads_bio(LSA)
 
 # Generate the plots
-p1 <- vio_plot(D, x_labels)
-p2 <- vio_plot(data.frame(list(cluster=D$cluster, reads=D$calibrated_reads)), x_labels)
+p1 <- vio_plot(D, x_labels, plot_title = "Uncalibrated")
+p2 <- vio_plot(data.frame(list(cluster=D$cluster, reads=D$calibrated_reads)), x_labels, plot_title = "Bio spike-in calibrated")
 # ggsave(file="Fig_lysate_cals.jpg", height=3.5, width=7, plot = p1 + p2)
-
-
+p1
+p2
 # Violin plots for H counts (raw/calibrated using syn/bio/both spike-ins) 
 # -----------------------------------------------------------------------
 
 # Calibrate reads based on bio and synth spikeins; this will return data in long format
 DH <- calibrate_reads_bio_synth(HSA)
 
-p3 <- vio_plot(DH, x_labels)
-p4 <- vio_plot(data.frame(list(cluster=DH$cluster, reads=DH$synth_calibrated_reads)), x_labels)
-p5 <- vio_plot(data.frame(list(cluster=DH$cluster, reads=DH$bio_calibrated_reads)), x_labels)
-p6 <- vio_plot(data.frame(list(cluster=DH$cluster, reads=DH$spikein_calibrated_reads)), x_labels)
+p3 <- vio_plot(DH, x_labels, plot_title = "Uncalibrated")
+p4 <- vio_plot(data.frame(list(cluster=DH$cluster, reads=DH$synth_calibrated_reads)), x_labels, plot_title = "Synth spike-in calibrated")
+p5 <- vio_plot(data.frame(list(cluster=DH$cluster, reads=DH$bio_calibrated_reads)), x_labels, plot_title = "Bio spike-in calibrated")
+p6 <- vio_plot(data.frame(list(cluster=DH$cluster, reads=DH$spikein_calibrated_reads)), x_labels, plot_title = "Combined spike-ins calibrated")
 # ggsave(file="Fig_homogenate_cals.jpg", height=7, width=7, plot = (p3 + p4)/(p5 + p6))
 
-# Join all calibrations in one figure
-ggsave(file="Figures/Fig_calibrations.jpg", height=10.5, width=7, plot = (p1 + p2 + p3 + p4 + p5 + p6) + plot_layout(axis_titles="collect",ncol=2) + plot_annotation(tag_levels="A"))
+combined_plot <- (p1 + p2 + p3 + p4 + p5 + p6) +
+  plot_layout(ncol = 2, guides = "collect", axis_titles = "collect") +
+  plot_annotation(tag_levels = "A") & theme(legend.position = "bottom")  
 
+ggsave(file = "Figures/Fig_calibrations.jpg",
+       plot = combined_plot,  height = 10.5,  width = 7,  dpi = 300)
 
 # Repeat plots with only samples for which there is both lysate and homogenate data
 # ---------------------------------------------------------------------------------
@@ -221,16 +237,20 @@ D <- calibrate_reads_bio(LSA)
 DH <- calibrate_reads_bio_synth(HSA)
 
 # Generate the plots
-p1 <- vio_plot(D, x_labels)
-p2 <- vio_plot(data.frame(list(cluster=D$cluster, reads=D$calibrated_reads)), x_labels)
-p3 <- vio_plot(DH, x_labels)
-p4 <- vio_plot(data.frame(list(cluster=DH$cluster, reads=DH$synth_calibrated_reads)), x_labels)
-p5 <- vio_plot(data.frame(list(cluster=DH$cluster, reads=DH$bio_calibrated_reads)), x_labels)
-p6 <- vio_plot(data.frame(list(cluster=DH$cluster, reads=DH$spikein_calibrated_reads)), x_labels)
+p1 <- vio_plot(D, x_labels, plot_title = "Uncalibrated")
+p2 <- vio_plot(data.frame(list(cluster=D$cluster, reads=D$calibrated_reads)), x_labels, plot_title = "Bio spike-in calibrated")
+p3 <- vio_plot(DH, x_labels, plot_title = "Uncalibrated")
+p4 <- vio_plot(data.frame(list(cluster=DH$cluster, reads=DH$synth_calibrated_reads)), x_labels, plot_title = "Synth spike-in calibrated")
+p5 <- vio_plot(data.frame(list(cluster=DH$cluster, reads=DH$bio_calibrated_reads)), x_labels, plot_title = "Bio spike-in calibrated")
+p6 <- vio_plot(data.frame(list(cluster=DH$cluster, reads=DH$spikein_calibrated_reads)), x_labels, plot_title = "Combined spike-ins calibrated")
+
+combined_plot_shared <- (p1 + p2 + p3 + p4 + p5 + p6) +
+  plot_layout(ncol = 2, guides = "collect", axis_titles = "collect") +
+  plot_annotation(tag_levels = "A") & theme(legend.position = "bottom")  
 
 # Join all calibrations for shared samples in one figure
-ggsave(file="Figures/Fig_calibrations_shared.jpg", height=10.5, width=7, plot = (p1 + p2 + p3 + p4 + p5 + p6) + plot_layout(axis_titles="collect",ncol=2) + plot_annotation(tag_levels="A"))
-
+ggsave(file = "Figures/Fig_calibrations_shared.jpg",
+       plot = combined_plot_shared,  height = 10.5,  width = 7,  dpi = 300)
 
 # Check if calibrated reads are approximately log_normal
 # ------------------------------------------------------
