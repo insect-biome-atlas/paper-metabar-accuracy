@@ -8,7 +8,6 @@ library(tidyr)
 library(RColorBrewer)
 
 # Get the coefficient of variation values
-setwd("/Users/emma/git/paper-metabar-accuracy/")
 source("get_0to5_calibration_error.R")
 
 
@@ -95,7 +94,9 @@ p_eff_by_cal <- ggplot(eff_all,
                        aes(x = prop, y = stddev,
                            colour = calibrator, shape = spikein)) +
   geom_jitter(width = 0.002, height = 0, size = 3, alpha = 0.8) +
-  facet_wrap(~ dataset, nrow = 1, scales = "free_y") +
+  facet_wrap(~ dataset, nrow = 1, scales = "free_y",
+             labeller = as_labeller(c("Homogenate" = "A) Homogenisation",
+                                     "Lysate"     = "B) Mild lysis"))) +
   scale_colour_manual(values = custom_cols, drop = FALSE) +
   scale_shape_discrete(drop = FALSE) +
   labs(
@@ -106,12 +107,13 @@ p_eff_by_cal <- ggplot(eff_all,
     shape  = "Target"
   ) +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        legend.position = "bottom")
+theme(axis.text.x = element_text(angle = 45, hjust = 1),
+      legend.position = "bottom",
+      strip.text = element_text(hjust = 0, size = 12),
+      panel.border = element_rect(colour = "grey", fill = NA, linewidth = 0.6))
 
 
-
-ggsave("Figures/Fig_spikein_efficiency_by_calibrator.pdf",
+ggsave("Figures/Fig_spikein_efficiency_by_calibrator.jpeg",
        plot = p_eff_by_cal, width = 8, height = 4)
 
 ##################################
