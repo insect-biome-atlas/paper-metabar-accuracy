@@ -1,0 +1,59 @@
+/*
+ * File: optmodel15_combined.tppl
+ * Description: Probabilistic model taken from optimal metabarcoding adjusted to 15samples, 6 bio spikeins and 2 artificial spikeins
+ * Compilation:
+ *  tpplc models/metabarcoding/optmodel15_combined.tppl -m 'smc-apf' --resample align --subsample -n 1 --output optmodel15_combined
+ * Execution with 10000 particles and 1 sweeps:
+ * ./optmodel15_combined models/data/15samples/15_hom_priors.json 10000 1 > output/output_october/15s_combined.json
+ */
+
+// Type for return
+type MyReturn = MyReturn{c: Real[], k_art1: Real, k_art2: Real, k_bio: Real, theta: Real}
+
+/*
+ * Recursive function per sample
+ */
+function process_samples(art_spikeins: Int[][], bio_spikeins: Int[][], k_art1: Real, k_art2: Real, k_bio: Real, theta: Real, mu: Real, sigma: Real, c_seq: Real[], j: Int, n_spikeins: Int[]) => Real[] { 
+  assume logC ~ Gaussian(mu, sigma) drift Gaussian(logC, 0.5); 
+  let c = exp(logC);
+  let c_seq = paste0([c_seq,[c]]);
+  //Observe art and bio spikeins
+  observe Real(art_spikeins[j][1]) ~ Gamma(k_art1, c * theta);
+  observe Real(art_spikeins[j][2]) ~ Gamma(k_art2, c * theta);
+  for i in 1 to (length(bio_spikeins[1])) { // 
+    if (bio_spikeins[j][i] != 0) { //cannot observe a zero from Gamma
+      observe Real(bio_spikeins[j][i]) ~ Gamma(Real(n_spikeins[i]) * k_bio, c * theta);
+    }
+  }
+  resample;
+  if (j == 15) { //15 samples
+    return c_seq;
+  }
+  else {
+    return process_samples(art_spikeins, bio_spikeins, k_art1, k_art2, k_bio, theta, mu, sigma, c_seq, (j+1), n_spikeins);
+  }
+}
+
+/*
+ * Model function
+ * Data:
+ *   Homogenate data, 15 samples. dataset is number of reads r per species per sample.
+ *
+ */
+model function myModel(art_spikeins: Int[][], bio_spikeins: Int[][], k_1: Real, k_2: Real, theta_1: Real, theta_2: Real, tau_1: Real, tau_2: Real, mu_1: Real, n_spikeins: Int[]) =>  MyReturn  {
+  assume k_art1 ~ Gamma(k_1, k_2) drift Gaussian(k_art1, 0.25);
+  assume k_art2 ~ Gamma(k_1, k_2) drift Gaussian(k_art2, 0.25);
+  assume k_bio ~ Gamma(k_1, k_2) drift Gaussian(k_bio, 0.25);
+
+  //assume logTheta ~ Gaussian(theta_1, theta_2) drift Gaussian(logTheta, 0.25); 
+  //let theta = exp(logTheta);
+  let theta = 1.0;
+  
+  assume tau ~  Gamma(tau_1, tau_2);  
+  let sigma = sqrt(1.0 / tau); 
+  assume mu ~ Gaussian(mu_1, sigma);  
+
+  let c_seq = process_samples(art_spikeins, bio_spikeins, k_art1, k_art2, k_bio, theta, mu, sigma, [], 1, n_spikeins);
+  
+  return MyReturn{c = c_seq, k_art1 = k_art1, k_art2 = k_art2, k_bio = k_bio, theta = theta};
+}

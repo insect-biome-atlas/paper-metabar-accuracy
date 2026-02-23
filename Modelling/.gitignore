@@ -1,0 +1,6 @@
+# Compiled TreePPL binaries (regenerated at runtime)
+bin/
+
+# Generated results (archive separately, e.g. Zenodo)
+Results/*
+!Results/.gitkeep
