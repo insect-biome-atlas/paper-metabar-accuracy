@@ -1,0 +1,93 @@
+type MyReturn = MyReturn{n: Real[], m: Int[]}
+
+/*
+ * Recursive prediction function per species
+ */   
+function predict_species(match_k_bio: Real[][], match_c: Real[][], match_weights: Real[], dataset: Int[][], species: Int, n: Real[], m_seq: Int[])=> MyReturn { 
+
+  // Sample p-value per species - "informed mixture prior"
+  assume p ~ Gaussian(0.5, 0.1); 
+  let p_vector = [0.95, p];
+  assume k ~ Categorical([0.65, 0.35]);
+  let p_value = p_vector[k+1];
+
+  //Sample which spikein's dist is drawn. 
+  assume mm ~ Categorical([(1.0/6.0),(1.0/6.0),(1.0/6.0),(1.0/6.0),(1.0/6.0),(1.0/6.0)]); 
+  let m = (mm+1); // so index not zero
+  //join m's
+  let new_m = paste0([m_seq, [m]]);
+
+  //Sample index
+  assume index_0 ~ Categorical(match_weights);
+  let index = (index_0+1);
+
+  //Sample k for this species
+  let k_bio = match_k_bio[m][index];
+
+  //Predict n per sample
+  let new_n = predict_sample(dataset, k_bio, index, match_c, p_value, 1, species, n); 
+
+  if (species==length(dataset[1])) { // Are we done with all species?
+    return MyReturn{n = new_n, m = new_m}; 
+  }
+  else { // If not, go to next one and start from sample 1 again.
+    return predict_species(match_k_bio, match_c, match_weights, dataset, (species+1), new_n, new_m); 
+  }
+}
+
+/*
+ * Recursive prediction function per sample
+ */
+function predict_sample(dataset: Int[][], k_bio: Real, index: Int, c_dist: Real[][], p_value: Real, sample: Int, species: Int, n: Real[])=> Real[] { 
+
+  if (dataset[sample][species]!=0) { //If reads are not zero 
+
+    //Sample c for this sample and index for the species
+    let c = c_dist[sample][index];
+
+    //New Geometric distribution implementation:
+    assume int_n ~ Geometric(p_value);
+    let sampled_n = Real(int_n + 1);
+    
+    //Observe species
+    observe Real(dataset[sample][species]) ~ Gamma(sampled_n * k_bio, c * 1.0); //theta fixed to 1.0
+
+    //Resample
+    resample;
+
+    //join n's
+    let new_n = paste0([n, [sampled_n]]);
+    if (sample==length(dataset)) { // Are we done with all samples?
+      return new_n;
+    }
+    else { // If not, go to next sample
+      return predict_sample(dataset, k_bio, index, c_dist, p_value, (sample+1), species, new_n); 
+    }
+  }
+  else { 
+    if (sample==length(dataset)) { // Are we done with all samples?
+      return n;
+    }
+    else {
+      return predict_sample(dataset, k_bio, index, c_dist, p_value, (sample+1), species, n); 
+    }
+  }
+}
+
+/*
+ * Model function
+ * Data:
+ *   Homogenate data, 15 samples. dataset is number of reads r per species per sample for two artificial spikeins
+ * Priors: 
+ *  Estimated p_values from ground truth count data per species
+ * Posterior:
+ *   returning n
+ */
+model function myModel(k_bio_dist: Real[][], c_dist: Real[][], weights: Real[], dataset: Int[][])=> MyReturn  {
+
+  //Go through species and samples 
+  let res = predict_species(k_bio_dist, c_dist, weights, dataset, 1, [], []); 
+
+  //Return predicted n and m
+  return res;
+}

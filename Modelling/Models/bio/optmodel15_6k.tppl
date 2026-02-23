@@ -1,0 +1,52 @@
+/*
+ * File: optmodel15_6k.tppl
+ * Description: Probabilistic model taken from optimal metabarcoding adjusted to 15samples
+ * Compilation:
+ *  tpplc models/15samples/optmodel15_6k.tppl -m 'smc-apf' --resample align --output optmodel15_6k
+ * Execution with 10000 particles and 1 sweeps:
+ * ./optmodel15_6k models/data/15samples/15_hom.json 10000 1 > output/output_february/15s_6k.json
+ */
+
+// Type for return
+type MyReturn = MyReturn{c: Real[], k: Real[], theta: Real}
+
+/*
+ * Recursive function per sample
+ */
+function process_samples(dataset: Int[][], k: Real[], theta: Real, mu: Real, sigma: Real, c_seq: Real[], j: Int, n: Int[]) => Real[] { 
+  assume logC ~ Gaussian(mu, sigma); 
+  let c = exp(logC);
+  let c_seq = paste0([c_seq,[c]]);
+  for i in 1 to 6 { //i is index of spike-in species(artificial or biological) or simply species index. Here 6 bio spikeins.
+    if (dataset[j][i] != 0) { //cannot observe a zero from Gamma
+      observe Real(dataset[j][i]) ~ Gamma(Real(n[i]) * k[i], c * theta);
+    }
+  }
+  resample;
+  if (j == 15) { //15 samples
+    return c_seq;
+  }
+  else {
+    return process_samples(dataset, k, theta, mu, sigma, c_seq, (j+1), n);
+  }
+}
+
+/*
+ * Model function
+ * Data:
+ *   Homogenate data, 15 samples. dataset is number of reads r per species per sample for six biological spikeins.
+ *
+ */
+model function myModel(bio_spikeins: Int[][], k_1: Real, k_2: Real, theta_1: Real, theta_2: Real, tau_1: Real, tau_2: Real, mu_1: Real, n_spikeins: Int[]) => MyReturn  {
+  let k = iid(gamma, GammaParam{shape = k_1, scale = k_2}, 6); 
+  assume logTheta ~ Gaussian(theta_1, theta_2); 
+  let theta = exp(logTheta);
+  
+  assume tau ~  Gamma(tau_1, tau_2);  
+  let sigma = sqrt(1.0 / tau); 
+  assume mu ~ Gaussian(mu_1, sigma);  
+
+  let c_seq = process_samples(bio_spikeins, k, theta, mu, sigma, [], 1, n_spikeins);
+
+  return MyReturn{c = c_seq, k = k, theta = theta}; 
+}

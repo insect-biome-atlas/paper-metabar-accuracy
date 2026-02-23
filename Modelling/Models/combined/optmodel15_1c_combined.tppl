@@ -1,0 +1,35 @@
+// Type for return
+type MyReturn = MyReturn{c: Real, k: Real, theta: Real}
+
+/*
+ * Model function
+ * Data:
+ *   Homogenate data, 15 samples. dataset is number of reads r per species per sample for six biological spikeins.
+ *
+ */
+model function myModel(art_spikeins: Int[][], bio_spikeins: Int[][], k_1: Real, k_2: Real, theta_1: Real, theta_2: Real, tau_1: Real, tau_2: Real, mu_1: Real, n_spikeins: Int[]) => MyReturn  {
+  assume k ~ Gamma(k_1, k_2);
+  assume logTheta ~ Gaussian(theta_1, theta_2); 
+  let theta = exp(logTheta);
+  
+  assume tau ~  Gamma(tau_1, tau_2);  
+  let sigma = sqrt(1.0 / tau); 
+  assume mu ~ Gaussian(mu_1, sigma);
+
+  assume logC ~ Gaussian(mu, sigma); 
+  let c = exp(logC);
+
+  for j in 1 to 15 { 
+    //Observe art and bio spikeins
+    observe Real(art_spikeins[j][1]) ~ Gamma(k, c * theta);
+    observe Real(art_spikeins[j][2]) ~ Gamma(k, c * theta);
+    for i in 1 to 6 { // 6 bioloical spikeins.
+      if (bio_spikeins[j][i] != 0) { //cannot observe a zero from Gamma
+        observe Real(bio_spikeins[j][i]) ~ Gamma(Real(n_spikeins[i]) * k, c * theta);
+      }
+    }
+  resample;
+  }
+
+ return MyReturn{c = c, k = k, theta = theta};
+}

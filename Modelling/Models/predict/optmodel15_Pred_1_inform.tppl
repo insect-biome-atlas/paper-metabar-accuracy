@@ -1,0 +1,86 @@
+/*
+ * Recursive prediction function per species
+ */   
+function predict_species(dataset: Int[][], c_dist: Real[][], k_bio_dist: Real[], weights: Real[], p_values: Real[], n_spikeins: Int[], sample: Int, species: Int, n: Real[])=> Real[] { 
+
+  // Sample p-value per species
+  assume p ~ Gaussian(0.5, 0.1); 
+  let p_vector = [1.0, p];
+  assume k ~ Categorical([0.65, 0.35]);
+  let p_value = p_vector[k+1];
+
+  //Sample index
+  assume index_0 ~ Categorical(weights);
+  let index = (index_0+1);
+
+  //Sample k for this species
+  let k_bio = k_bio_dist[index];
+
+  //Predict n per sample
+  let new_n = predict_sample(dataset, k_bio, index, c_dist, p_value, n_spikeins, 1, species, n); 
+
+  if (species==length(dataset[1])) { // Are we done with all species?
+    return new_n;
+  }
+  else { // If not, go to next one and start from sample 1 again.
+    return predict_species(dataset, c_dist, k_bio_dist, weights, p_values, n_spikeins, 1, (species+1), new_n); 
+  }
+}
+
+/*
+ * Recursive prediction function per sample
+ */
+function predict_sample(dataset: Int[][], k_bio: Real, index: Int, c_dist: Real[][], p_value: Real, n_spikeins: Int[], sample: Int, species: Int, n: Real[])=> Real[] { 
+
+  if (dataset[sample][species]!=0) { //If reads are not zero 
+
+    //Sample c for this sample and index for the species
+    let c = c_dist[sample][index];
+
+    //New Geometric distribution implementation:
+    assume int_n ~ Geometric(p_value);
+    let sampled_n = Real(int_n + 1);
+    
+    //Observe species
+    observe Real(dataset[sample][species]) ~ Gamma(sampled_n * k_bio, c * 1.0); //fixed Theta 
+
+    //Resample
+    resample;
+
+    //join n's
+    let new_n = paste0([n, [sampled_n]]);
+    if (sample==length(dataset)) { // Are we done with all samples?
+      return new_n;
+    }
+    else { // If not, go to next sample
+      return predict_sample(dataset, k_bio, index, c_dist, p_value, n_spikeins, (sample+1), species, new_n); 
+    }
+  }
+  else { 
+    if (sample==length(dataset)) { // Are we done with all samples?
+      return n;
+    }
+    else {
+      return predict_sample(dataset, k_bio, index, c_dist, p_value, n_spikeins, (sample+1), species, n); 
+    }
+  }
+}
+
+/*
+ * Model function
+ * Data:
+ *   Homogenate data, 15 samples. dataset is number of reads r per species per sample for two artificial spikeins
+ * Priors: 
+ *  Estimated p_values from ground truth count data per species
+ * Posterior:
+ *   returning n
+ */
+model function myModel(dataset: Int[][], c_dist: Real[][], weights: Real[], k_bio_dist: Real[], p_values: Real[], n_spikeins: Int[])=> Real[]  {
+
+  //Go through species (here 1 to 472) and samples (here from 1 to 15)
+  let n = predict_species(dataset, c_dist, k_bio_dist, weights, p_values, n_spikeins, 1, 1, []); 
+
+  //Return predicted n
+  return(n); 
+}
+

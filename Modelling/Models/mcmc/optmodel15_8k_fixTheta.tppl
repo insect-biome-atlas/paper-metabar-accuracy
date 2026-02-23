@@ -1,0 +1,56 @@
+// Type for return
+type MyReturn = MyReturn{c: Real[], k: Real[], theta: Real}
+
+/*
+ * Recursive function per sample
+ */
+function process_samples(art_spikeins: Int[][], bio_spikeins: Int[][], k: Real[], theta: Real, mu: Real, sigma: Real, c_seq: Real[], j: Int, n: Int[]) => Real[] { 
+  assume logC ~ Gaussian(mu, sigma) drift Gaussian(logC, 0.5); 
+  let c = exp(logC);
+  let c_seq = paste0([c_seq,[c]]);
+    //Observe art and bio spikeins
+    observe Real(art_spikeins[j][1]) ~ Gamma(k[1], c * theta);
+    observe Real(art_spikeins[j][2]) ~ Gamma(k[2], c * theta);
+    for i in 1 to 6 { // 6 bioloical spikeins.
+      if (bio_spikeins[j][i] != 0) { //cannot observe a zero from Gamma
+        observe Real(bio_spikeins[j][i]) ~ Gamma(Real(n[i]) * k[(2+i)], c * theta);
+      }
+    }
+  resample;
+  if (j == 15) { //15 samples
+    return c_seq;
+  }
+  else {
+    return process_samples(art_spikeins, bio_spikeins, k, theta, mu, sigma, c_seq, (j+1), n);
+  }
+}
+
+/*
+ * Model function
+ * Data:
+ *   Homogenate data, 15 samples. dataset is number of reads r per species per sample for six biological spikeins and two artificial spikeins.
+ *
+ */
+model function myModel(art_spikeins: Int[][], bio_spikeins: Int[][], k_1: Real, k_2: Real, theta_1: Real, theta_2: Real, tau_1: Real, tau_2: Real, mu_1: Real, n_spikeins: Int[]) => MyReturn  {
+  assume k1 ~ Gamma(k_1, k_2) drift Gaussian(k1, 0.25);
+  assume k2 ~ Gamma(k_1, k_2) drift Gaussian(k2, 0.25);
+  assume k3 ~ Gamma(k_1, k_2) drift Gaussian(k3, 0.25);
+  assume k4 ~ Gamma(k_1, k_2) drift Gaussian(k4, 0.25);
+  assume k5 ~ Gamma(k_1, k_2) drift Gaussian(k5, 0.25);
+  assume k6 ~ Gamma(k_1, k_2) drift Gaussian(k6, 0.25);
+  assume k7 ~ Gamma(k_1, k_2) drift Gaussian(k7, 0.25);
+  assume k8 ~ Gamma(k_1, k_2) drift Gaussian(k8, 0.25);
+  let k = paste0([[k1],[k2],[k3],[k4],[k5],[k6],[k7],[k8]]);
+
+  //assume logTheta ~ Gaussian(theta_1, theta_2) drift Gaussian(logTheta, 0.25); 
+  //let theta = exp(logTheta);
+  let theta = 1.0;
+  
+  assume tau ~  Gamma(tau_1, tau_2);  
+  let sigma = sqrt(1.0 / tau); 
+  assume mu ~ Gaussian(mu_1, sigma);  
+
+  let c_seq = process_samples(art_spikeins, bio_spikeins, k, theta, mu, sigma, [], 1, n_spikeins);
+
+  return MyReturn{c = c_seq, k = k, theta = theta}; 
+}
