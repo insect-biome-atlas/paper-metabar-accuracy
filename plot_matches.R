@@ -325,7 +325,7 @@ rr<-ggplot(filtered_plot_data, aes(x = reads_per_biomass, y = ratio_shared_lys))
     panel.grid.minor = element_blank(),
     plot.title = element_text(face = "bold")
   )
-ggsave(file="./Figures/Ratio_homogenate_retrieval.jpg", height=7, width=8, plot = rr)
+ggsave(file="~/Desktop/git/paper-metabar-accuracy/Figures/Ratio_homogenate_retrieval.jpg", height=7, width=8, plot = rr)
 
 
 #### for the selected 15 samples only:
