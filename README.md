@@ -43,3 +43,11 @@ And additional exploratory figures:
 
 ### `generate_match_stats.R`
 Generates more detailed statistics for the matching of lysate and homogenate reads. The statistics are printed to the file `match_stats.txt`.
+
+### `Visuals_Feb2026.R`
+Script containing analyses of the 15 reference samples and producing plots for fig. 3 and Figs S7 and S8. 
+
+### `Individual_barcoding`
+Folder containing scripts used for individual insect barcode analysis. A dedicated README file inside the folder.
+
+

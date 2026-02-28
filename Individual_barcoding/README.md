@@ -1,5 +1,5 @@
 # Symbio-COI-Barcoding
-This repository contains scripts and other files used for analysing amplicon sequencing data (COI) for the publication by Iwaszkiewicz-Eggebrecht *et al.* titled *"Accuracy of occurrence and abundance estimates from insect metabarcoding."*
+This repository contains scripts and other files used for analysing amplicon sequencing data (COI) for the publication by XXX *et al.* titled *"Accuracy of occurrence and abundance estimates from insect metabarcoding."*
 
 The starting data comprised merged reads from Illumina amplicon sequencing. 
 
